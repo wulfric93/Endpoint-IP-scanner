@@ -3,7 +3,7 @@
 ## اسکنر آی پی وارپ و نصب کننده ی wire-g (کانفیگ رایگان وایرگارد) + کلونر
 install
 ```
-bash <(curl -fsSL https://raw.githubusercontent.com/Ptechgithub/warp/main/endip/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/wulfric93/Endpoint-IP-scanner/main/endip/install.sh)
 ```
 ![16](https://raw.githubusercontent.com/Ptechgithub/configs/main/media/16.jpg)
 

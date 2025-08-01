@@ -5,7 +5,7 @@ red='\033[0;31m'
 green='\033[0;32m'
 yellow='\033[0;33m'
 blue='\033[0;34m'
-purple='\033[0;35m'
+orange='\033[0;35m'
 cyan='\033[0;36m'
 rest='\033[0m'
 
@@ -224,19 +224,19 @@ endipresult() {
 	echo -e "${green}Results Saved in result.csv${rest}"
 	echo ""
 	if [ "$Endip_v4" ]; then
-		echo -e "${purple}************************************${rest}"
-		echo -e "${purple}*           ${yellow}Best IPv4:Port${purple}         *${rest}"
-		echo -e "${purple}*                                  *${rest}"
-		echo -e "${purple}*          ${cyan}$Endip_v4${purple}     *${rest}"
-		echo -e "${purple}*           ${cyan}Delay: ${green}[$delay]        ${purple}*${rest}"
-		echo -e "${purple}************************************${rest}"
+		echo -e "${orange}************************************${rest}"
+		echo -e "${orange}*           ${yellow}Best IPv4:Port${orange}         *${rest}"
+		echo -e "${orange}*                                  *${rest}"
+		echo -e "${orange}*          ${cyan}$Endip_v4${orange}     *${rest}"
+		echo -e "${orange}*           ${cyan}Delay: ${green}[$delay]        ${orange}*${rest}"
+		echo -e "${orange}************************************${rest}"
 	elif [ "$Endip_v6" ]; then
-		echo -e "${purple}********************************************${rest}"
-		echo -e "${purple}*          ${yellow}Best [IPv6]:Port                ${purple}*${rest}"
-		echo -e "${purple}*                                          *${rest}"
-		echo -e "${purple}* ${cyan}$Endip_v6${purple} *${rest}"
-		echo -e "${purple}*           ${cyan}Delay: ${green}[$delay]               ${purple}*${rest}"
-		echo -e "${purple}********************************************${rest}"
+		echo -e "${orange}********************************************${rest}"
+		echo -e "${orange}*          ${yellow}Best [IPv6]:Port                ${orange}*${rest}"
+		echo -e "${orange}*                                          *${rest}"
+		echo -e "${orange}* ${cyan}$Endip_v6${orange} *${rest}"
+		echo -e "${orange}*           ${cyan}Delay: ${green}[$delay]               ${orange}*${rest}"
+		echo -e "${orange}********************************************${rest}"
 	else
 		echo -e "${red} No valid IP addresses found.${rest}"
 	fi
@@ -247,34 +247,34 @@ endipresult() {
 
 # Menu
 clear
-echo -e "${cyan}By --> Peyman * Github.com/Ptechgithub * ${rest}"
+echo -e "${cyan}By --> Wulfric * Github.com/wulfric93 * ${rest}"
 echo ""
-echo -e "${purple}**********************${rest}"
-echo -e "${purple}*  ${green}Endpoint Scanner ${purple} *${rest}"
-echo -e "${purple}**********************${rest}"
-echo -e "${purple}[1] ${cyan}Preferred${green} IPv4${purple}   * ${rest}"
-echo -e "${purple}                     *${rest}"
-echo -e "${purple}[2] ${cyan}Preferred${green} IPv6${purple}   * ${rest}"
-echo -e "${purple}                     *${rest}"
-echo -e "${purple}[${red}0${purple}] Exit             *${rest}"
-echo -e "${purple}**********************${rest}"
+echo -e "${orange}**********************${rest}"
+echo -e "${orange}*  ${green}Endpoint Scanner ${orange} *${rest}"
+echo -e "${orange}**********************${rest}"
+echo -e "${orange}[1] ${cyan}Preferred${green} IPv4${orange}   * ${rest}"
+echo -e "${orange}                     *${rest}"
+echo -e "${orange}[2] ${cyan}Preferred${green} IPv6${orange}   * ${rest}"
+echo -e "${orange}                     *${rest}"
+echo -e "${orange}[${red}0${orange}] Exit             *${rest}"
+echo -e "${orange}**********************${rest}"
 echo -en "${cyan}Enter your choice: ${rest}"
 read -r choice
 case "$choice" in
 1)
-	echo -e "${purple}*********************${rest}"
+	echo -e "${orange}*********************${rest}"
 	cfwarpIP
 	endipv4
 	endipresult
 	;;
 2)
-	echo -e "${purple}*********************${rest}"
+	echo -e "${orange}*********************${rest}"
 	cfwarpIP
 	endipv6
 	endipresult
 	;;
 0)
-	echo -e "${purple}*********************${rest}"
+	echo -e "${orange}*********************${rest}"
 	echo -e "${cyan}Bye${rest}"
 	exit
 	;;

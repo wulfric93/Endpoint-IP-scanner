@@ -224,19 +224,8 @@ endipresult() {
 	echo -e "${green}Results Saved in result.csv${rest}"
 	echo ""
 	if [ "$Endip_v4" ]; then
-		echo -e "${orange}************************************${rest}"
-		echo -e "${orange}*           ${yellow}Best IPv4:Port${orange}         *${rest}"
-		echo -e "${orange}*                                  *${rest}"
-		echo -e "${orange}*          ${cyan}$Endip_v4${orange}     *${rest}"
-		echo -e "${orange}*           ${cyan}Delay: ${green}[$delay]        ${orange}*${rest}"
-		echo -e "${orange}************************************${rest}"
-	elif [ "$Endip_v6" ]; then
-		echo -e "${orange}********************************************${rest}"
-		echo -e "${orange}*          ${yellow}Best [IPv6]:Port                ${orange}*${rest}"
-		echo -e "${orange}*                                          *${rest}"
-		echo -e "${orange}* ${cyan}$Endip_v6${orange} *${rest}"
-		echo -e "${orange}*           ${cyan}Delay: ${green}[$delay]               ${orange}*${rest}"
-		echo -e "${orange}********************************************${rest}"
+		echo -e "$Endip_v4"
+		echo -e "$Endip_v6"
 	else
 		echo -e "${red} No valid IP addresses found.${rest}"
 	fi

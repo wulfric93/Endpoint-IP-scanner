@@ -9,6 +9,56 @@ purple='\033[0;35m'
 cyan='\033[0;36m'
 rest='\033[0m'
 
+# Predefined IPv4 and IPv6 lists
+ipv4_list=(
+    "162.159.192.19:1701"
+    "188.114.98.61:955"
+    "188.114.96.137:988"
+    "188.114.99.66:4198"
+    "188.114.99.212:1074"
+    "188.114.98.224:4500"
+    "188.114.98.224:878"
+    "188.114.98.224:1387"
+    "188.114.98.224:3476"
+    "188.114.98.224:500"
+    "188.114.98.224:2371"
+    "188.114.98.224:1070"
+    "188.114.98.224:854"
+    "188.114.98.224:864"
+    "188.114.98.224:939"
+    "188.114.98.224:2408"
+    "188.114.98.224:908"
+    "162.159.192.121:2371"
+    "188.114.96.145:1074"
+    "188.114.98.0:878"
+    "188.114.98.228:878"
+    "188.114.99.0:878"
+    "188.114.98.224:1074"
+    "162.159.195.238:7156"
+    "188.114.98.224:894"
+    "188.114.96.191:3854"
+    "188.114.99.53:890"
+    "188.114.96.157:890"
+    "188.114.96.6:890"
+    "188.114.99.137:968"
+    "188.114.96.239:1387"
+    "8.34.146.47:864"
+    "8.35.211.119:500"
+    "8.34.70.34:1002"
+    "8.34.70.82:988"
+    "8.34.146.156:2408"
+    "8.39.204.244:3476"
+    "8.35.211.140:7156"
+    "8.34.146.37:3854"
+)
+
+ipv6_list=(
+    "[2606:4700:d1::58a8:0f84:d37f:90e7]:7559"
+    "[2606:4700:d1::1665:bab6:7ff1:a710]:878"
+    "[2606:4700:d0::6932:d526:67b7:77ce]:890"
+    "[2606:4700:d1::9eae:b:2754:6ad9]:1018"
+)
+
 case "$(uname -m)" in
 x86_64 | x64 | amd64)
 	cpu=amd64
@@ -41,118 +91,19 @@ cfwarpIP() {
 
 endipv4() {
 	n=0
-	iplist=100
-	while true; do
-		temp[$n]=$(echo 162.159.192.$(($RANDOM % 256)))
+	iplist=${#ipv4_list[@]} # Set iplist to the number of IPv4 addresses
+	for ip in "${ipv4_list[@]}"; do
+		temp[$n]="$ip"
 		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-		temp[$n]=$(echo 162.159.193.$(($RANDOM % 256)))
-		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-		temp[$n]=$(echo 162.159.195.$(($RANDOM % 256)))
-		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-		temp[$n]=$(echo 188.114.96.$(($RANDOM % 256)))
-		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-		temp[$n]=$(echo 188.114.97.$(($RANDOM % 256)))
-		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-		temp[$n]=$(echo 188.114.98.$(($RANDOM % 256)))
-		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-		temp[$n]=$(echo 188.114.99.$(($RANDOM % 256)))
-		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-	done
-	while true; do
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo 162.159.192.$(($RANDOM % 256)))
-			n=$(($n + 1))
-		fi
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo 162.159.193.$(($RANDOM % 256)))
-			n=$(($n + 1))
-		fi
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo 162.159.195.$(($RANDOM % 256)))
-			n=$(($n + 1))
-		fi
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo 188.114.96.$(($RANDOM % 256)))
-			n=$(($n + 1))
-		fi
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo 188.114.97.$(($RANDOM % 256)))
-			n=$(($n + 1))
-		fi
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo 188.114.98.$(($RANDOM % 256)))
-			n=$(($n + 1))
-		fi
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo 188.114.99.$(($RANDOM % 256)))
-			n=$(($n + 1))
-		fi
 	done
 }
 
 endipv6() {
 	n=0
-	iplist=100
-	while true; do
-		temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2)))])
+	iplist=${#ipv6_list[@]} # Set iplist to the number of IPv6 addresses
+	for ip in "${ipv6_list[@]}"; do
+		temp[$n]="$ip"
 		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-		temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2)))])
-		n=$(($n + 1))
-		if [ $n -ge $iplist ]; then
-			break
-		fi
-	done
-	while true; do
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo [2606:4700:d0::$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2)))])
-			n=$(($n + 1))
-		fi
-		if [ $(echo "${temp[@]}" | sed -e 's/ /\n/g' | sort -u | wc -l) -ge $iplist ]; then
-			break
-		else
-			temp[$n]=$(echo [2606:4700:d1::$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2))):$(printf '%x\n' $(($RANDOM * 2 + $RANDOM % 2)))])
-			n=$(($n + 1))
-		fi
 	done
 }
 
@@ -220,7 +171,7 @@ v2ray() {
 
 show() {
 	echo ""
-	sleep1
+	sleep 1
 	clear
 	if [ -s result.csv ]; then
 		Endip_v46=$(awk 'NR==2 {split($1, arr, ","); print arr[1]}' result.csv)
@@ -378,7 +329,7 @@ cloner() {
 		license="$input_license"
 	fi
 	echo -e "${cyan}######################${rest}"
-	echo -e "${purple} Warp License cloner ${rest}"
+	echo -e "${purple}🔑 Warp License cloner 🔑${rest}"
 	echo -e "${green}Starting...${rest}"
 	echo -e "${purple}-------------------------------------${rest}"
 	while true; do
@@ -497,7 +448,7 @@ cloner() {
 			--header "Accept: application/json" \
 			--header "Accept-Encoding: gzip" \
 			--header "Cf-Client-Version: a-6.3-${rand}" \
-			--header "User-Agent: okhttp$license | $quota/3.12.1")
+			--header "User-Agent: okhttp/3.12.1")
 
 		if [ "$response" -ne 204 ]; then
 			echo "Error: HTTP status code $response"
@@ -556,7 +507,7 @@ case "$choice" in
 	;;
 0)
 	echo -e "${purple}*********************${rest}"
-	echo -e "${cyan}By ${rest}"
+	echo -e "${cyan}By 🔑${rest}"
 	exit
 	;;
 *)

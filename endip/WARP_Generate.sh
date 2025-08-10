@@ -19,7 +19,7 @@ download_wgcf() {
         echo -e "${YELLOW}Downloading wgcf...${PLAIN}"
         local affix=$(arch_affix)
         curl -L -o wgcf -# --retry 2 \
-            "https://github.com/ViRb3/wgcf/releases/download/v2.2.24/wgcf_2.2.24_linux_${affix}"
+            "https://github.com/ViRb3/wgcf/releases/download/v2.2.24/wgcf_2.2.27_linux_${affix}"
         chmod +x wgcf
         sudo mv wgcf /usr/local/bin/
     fi

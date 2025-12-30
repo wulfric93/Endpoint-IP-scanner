@@ -1,16 +1,50 @@
 #!/usr/bin/env bash
 
-# TunnelBear VPN - Full IP List & Latency Checker (v3.3 - Fixed for Termux)
-# Fixed the "bad substitution" error that happens on older Bash versions in Termux
-# Now uses indirect expansion safely
-# Lists ALL IPs first, then pings them all
-# All subdomains included (ae, hk, ua, uk, etc.)
+# TunnelBear VPN - Universal Latency Checker (v3.6 - Final)
+# Works perfectly on Termux (Android) and all Linux distros
+# Auto-installs dnsutils (dig/nslookup) on Termux
+# Lists all IPs → pings them → shows latency → sorts fastest first
 
 clear
-echo -e "\033[1;36mTunnelBear VPN - Full IP List & Latency Checker (v3.3)\033[0m"
-echo -e "\033[1;36m======================================================\033[0m"
+echo -e "\033[1;36mTunnelBear VPN - Universal Latency Checker (v3.6)\033[0m"
+echo -e "\033[1;36m==================================================\033[0m"
 echo
 
+# Check if command exists
+command_exists() {
+    command -v "$1" >/dev/null 2>&1
+}
+
+# Auto setup
+if [[ -n "$PREFIX" && "$PREFIX" == */com.termux/* ]]; then
+    echo -e "\033[1;34mTermux detected — installing/updating tools...\033[0m"
+    pkg update -y >/dev/null 2>&1
+
+    if ! command_exists dig && ! command_exists nslookup; then
+        echo -n "Installing dnsutils (dig/nslookup)... "
+        pkg install -y dnsutils >/dev/null 2>&1 && echo -e "\033[32mOK\033[0m" || { echo -e "\033[31mFailed\033[0m"; exit 1; }
+    else
+        echo -e "\033[32mdig/nslookup already installed\033[0m"
+    fi
+
+    if ! command_exists ping; then
+        pkg install -y iputils >/dev/null 2>&1
+    fi
+
+    echo -e "\033[1;32mTermux is ready!\033[0m\n"
+else
+    echo -e "\033[1;34mLinux detected — checking tools...\033[0m"
+    if ! command_exists dig && ! command_exists nslookup; then
+        echo -e "\033[33mPlease install DNS tools:\033[0m"
+        echo "   Ubuntu/Debian: sudo apt install dnsutils"
+        echo "   Fedora: sudo dnf install bind-utils"
+        echo "   Arch: sudo pacman -S bind"
+        read -rp "Press Enter when ready..."
+    fi
+    echo
+fi
+
+# Server list
 declare -A north_america=(
     ["ca"]="ca.lazerpenguin.com → Canada (General)"
     ["ca-montreal"]="ca-montreal-tier2.lazerpenguin.com → Canada - Montreal"
@@ -107,8 +141,8 @@ continent_names=("North America" "South America" "Europe" "Asia" "Oceania" "Afri
 
 while true; do
     clear
-    echo -e "\033[1;36mTunnelBear VPN - Full IP List & Latency Checker (v3.3)\033[0m"
-    echo -e "\033[1;36m======================================================\033[0m"
+    echo -e "\033[1;36mTunnelBear VPN - Universal Latency Checker (v3.6)\033[0m"
+    echo -e "\033[1;36m==================================================\033[0m"
     echo
 
     num=1
@@ -117,12 +151,10 @@ while true; do
     for idx in "${!continents[@]}"; do
         continent="${continents[$idx]}"
         name="${continent_names[$idx]}"
-
         echo -e "\033[1;35m=== $name ===\033[0m"
 
-        # Fixed line: safe way to get keys from indirect associative array
-        eval "current_array=(\"\${!$continent[@]}\")"
-        sorted_keys=($(printf '%s\n' "${current_array[@]}" | sort))
+        eval "keys=(\"\${!$continent[@]}\")"
+        sorted_keys=($(printf '%s\n' "${keys[@]}" | sort))
 
         for key in "${sorted_keys[@]}"; do
             eval "desc=\"\${$continent[$key]}\""
@@ -134,94 +166,83 @@ while true; do
         echo
     done
 
-    read -rp "Enter server number (or 'q' to quit): " choice
-
-    [[ "$choice" == "q" || "$choice" == "Q" ]] && echo -e "\nGoodbye!\n" && exit 0
+    read -rp "Enter number (or 'q' to quit): " choice
+    [[ "$choice" =~ ^[Qq]$ ]] && echo -e "\nGoodbye!\n" && exit 0
 
     if ! [[ "$choice" =~ ^[0-9]+$ ]] || [[ -z "${number_to_key[$choice]}" ]]; then
-        echo -e "\033[31mInvalid choice. Press Enter to continue...\033[0m"
+        echo -e "\033[31mInvalid choice.\033[0m"
         read -r
         continue
     fi
 
     selected_key="${number_to_key[$choice]}"
     continent_ref="${number_to_key[$choice.continent]}"
-
     eval "selected_subdomain=\"\${$continent_ref[$selected_key]}\""
     selected_subdomain=$(echo "$selected_subdomain" | awk '{print $1}')
     eval "description=\"\${$continent_ref[$selected_key]}\""
     description=$(echo "$description" | cut -d' ' -f3-)
 
     echo
-    echo -e "\033[1;34mTesting:\033[0m $description"
-    echo -e "\033[1;34mSubdomain:\033[0m $selected_subdomain"
-    echo "Resolving all associated IPs..."
-    echo
+    echo -e "\033[1;34mTesting: $description\033[0m"
+    echo -e "Subdomain: $selected_subdomain"
+    echo "Resolving IPs..."
 
     if command -v dig >/dev/null 2>&1; then
         mapfile -t ips < <(dig +short "$selected_subdomain" A 2>/dev/null | grep -E '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' | sort -V)
     elif command -v nslookup >/dev/null 2>&1; then
-        mapfile -t ips < <(nslookup "$selected_subdomain" 2>/dev/null | grep '^Address:' | grep -v '#' | awk '{print $2}' | grep -E '^[0-9]{1,3}(\.[0-9]{1,3}){3}$' | sort -V)
+        mapfile -t ips < <(nslookup "$selected_subdomain" 2>/dev/null | grep '^Address:' | grep -v '#' | awk '{print $2}' | sort -V)
     else
-        echo -e "\033[31mError: Need 'dig' or 'nslookup' installed.\033[0m"
-        echo "Termux: pkg install bind-tools"
+        echo -e "\033[31mDNS tool missing.\033[0m"
         read -r
         continue
     fi
 
     if [[ ${#ips[@]} -eq 0 ]]; then
-        echo -e "\033[31m✖ No IP addresses resolved for $selected_subdomain\033[0m"
-        read -rp $'\nPress Enter to continue...'
+        echo -e "\033[31mNo IPs resolved (may be inactive server).\033[0m"
+        read -rp "Press Enter..."
         continue
     fi
 
-    echo -e "\033[1;33mAll resolved IPs (${#ips[@]} total):\033[0m"
+    echo -e "\033[1;33mAll IPs (${#ips[@]} found):\033[0m"
     for i in "${!ips[@]}"; do
         printf "   %2d) %s\n" $((i+1)) "${ips[$i]}"
     done
     echo
-    echo "Pinging all IPs (4 packets each, 3s timeout)..."
-    echo
+    echo "Pinging all IPs..."
 
     declare -A ip_latency
     working_count=0
-    fastest_ip=""
     fastest_ms=999999
+    fastest_ip=""
 
     for ip in "${ips[@]}"; do
         result=$(ping -c 4 -W 3 "$ip" 2>/dev/null)
         if [[ $? -eq 0 ]]; then
-            avg=$(echo "$result" | tail -1 | awk -F'/' '{print $5}' | awk '{print $1}')
-            if [[ -n "$avg" && "$avg" != "0.000" ]]; then
-                printf -v avg "%.0f" "$avg"
+            avg=$(echo "$result" | tail -1 | awk -F'/' '{print $5}' | cut -d. -f1)
+            if [[ -n "$avg" ]]; then
                 ip_latency["$ip"]="$avg"
-                echo -e "\033[32m✔ $ip  →  ${avg} ms\033[0m"
+                echo -e "\033[32m✔ $ip → ${avg} ms\033[0m"
                 ((working_count++))
-                if (( avg < fastest_ms )); then
-                    fastest_ms=$avg
-                    fastest_ip="$ip"
-                fi
-            else
-                echo -e "\033[33m⚠ $ip  →  responded but no latency data\033[0m"
+                (( avg < fastest_ms )) && fastest_ms=$avg && fastest_ip="$ip"
             fi
         else
-            echo -e "\033[31m✖ $ip  →  unreachable\033[0m"
+            echo -e "\033[31m✖ $ip → unreachable\033[0m"
         fi
     done
 
     echo
     if [[ $working_count -gt 0 ]]; then
-        echo -e "\033[1;32mResponsive servers (sorted fastest to slowest):\033[0m"
+        echo -e "\033[1;32mBest servers (fastest first):\033[0m"
         for ip in $(printf '%s %s\n' "${ip_latency[@]}" "${!ip_latency[@]}" | sort -n | awk '{print $2}'); do
             echo -e "   • $ip  (\033[1;33m${ip_latency[$ip]} ms\033[0m)"
         done
         echo
-        echo -e "\033[1;36mFastest IP → $fastest_ip ($fastest_ms ms)\033[0m"
+        echo -e "\033[1;36mFastest: $fastest_ip ($fastest_ms ms)\033[0m"
     else
-        echo -e "\033[31mNo IPs responded to ping.\033[0m"
+        echo -e "\033[31mNo responsive IPs.\033[0m"
     fi
 
     echo
-    read -rp $'Check another server? (y/n): ' again
-    [[ "$again" != "y" && "$again" != "Y" ]] && echo -e "\nGoodbye!\n" && exit 0
+    read -rp "Check another? (y/n): " again
+    [[ "$again" != "y" && "$again" != "Y" ]] && echo -e "\nDone!\n" && exit 0
 done
